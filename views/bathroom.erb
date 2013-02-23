@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><%= @bathroom_status.title %></title>
+  <link type="text/html" href="http://ci.jenkins-ci.org/job/core_selenium-test/" rel="alternate"/>
+
+  <updated>2012-10-27T01:55:14Z</updated>
+  <author>
+    <name><%= @bathroom_status.title %> Server</name>
+  </author>
+  <id>urn:uuid:00000000-0000-0000-0000-000000000000</id>
+
+  <entry>
+    <title>Bathroom Availability (<%= @bathroom_status.status %>)</title>
+    <id>tag:bathrooms.boulder.pivotallabs.com</id>
+    <published><%= @bathroom_status.updated_at.httpdate %></published>
+    <updated><%= @bathroom_status.updated_at.httpdate %></updated>
+  </entry>
+</feed>
