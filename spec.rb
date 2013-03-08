@@ -57,3 +57,40 @@ describe BathroomStatus do
     end
   end
 end
+
+describe Status do
+  before do
+    @status = Status.new
+  end
+
+  describe "#check" do
+    describe "less then 30 items checked" do
+      it "returns false" do
+        29.times do |n|
+          @status.check(n).should be false
+        end
+      end
+    end
+
+    describe "more then 30 items checked" do
+      it "returns false if any of the last 30 are not 0" do
+        30.times do
+          @status.check(0)
+        end
+        @status.check(1).should be false
+        @status.check(0).should be false
+      end
+
+      it "returns true if all of the last 30 are 0" do
+        @status.check(1)
+
+        29.times do
+          @status.check(0)
+        end
+
+        @status.check(0).should be false
+        @status.check(0).should be true
+      end
+    end
+  end
+end
