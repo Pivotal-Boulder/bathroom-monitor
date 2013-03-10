@@ -12,33 +12,11 @@ get '/bathroom-south.rss' do
   erb :bathroom
 end
 
-class Status
-  def initialize
-    @queue = []
-  end
-
-  def check(status)
-    add(status)
-    @queue.length > 29 && @queue.all? { |status| status.to_i == 0 }
-  end
-
-  private
-  def add(status)
-    @queue.shift if @queue.length > 30
-    @queue.push(status)
-  end
-end
-
 board = Dino::Board.new(Dino::TxRx.new)
-sensor = Dino::Components::Sensor.new(pin: 'A0', board: board)
-status = Status.new
+button = Dino::Components::Button.new(pin: 12, board: board)
 
-on_data = Proc.new do |data|
-  status.add(data)
-  status.zero? ? BathroomStatus.south.busy! : BathroomStatus.south.free!
-end
-
-sensor.when_data_received(on_data)
+button.down { BathroomStatus.south.busy! }
+button.up { BathroomStatus.south.free! }
 
 class BathroomStatus
   attr_reader :location, :status, :updated_at
@@ -56,11 +34,13 @@ class BathroomStatus
   end
 
   def busy!
+    puts "BUSY!!"
     self.status = :broken
     self.updated_at = Time.now
   end
 
   def free!
+    puts "FREE!!"
     self.status = :stable
     self.updated_at = Time.now
   end
