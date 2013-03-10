@@ -52,5 +52,6 @@ class BathroomStatus
   def initialize(location = :north)
     self.location = location
     self.status = :stable
+    self.free!
   end
 end
