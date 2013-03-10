@@ -2,6 +2,18 @@ require 'sinatra'
 require 'active_support'
 require 'dino'
 
+begin
+  board = Dino::Board.new(Dino::TxRx.new)
+  button = Dino::Components::Button.new(pin: 12, board: board)
+
+  button.down { BathroomStatus.south.busy! }
+  button.up { BathroomStatus.south.free! }
+rescue Dino::BoardNotFound
+  get '*' do
+    "The board cannot be found"
+  end
+end
+
 get '/bathroom-north.rss' do
   @bathroom_status = BathroomStatus.north
   erb :bathroom
@@ -11,12 +23,6 @@ get '/bathroom-south.rss' do
   @bathroom_status = BathroomStatus.south
   erb :bathroom
 end
-
-board = Dino::Board.new(Dino::TxRx.new)
-button = Dino::Components::Button.new(pin: 12, board: board)
-
-button.down { BathroomStatus.south.busy! }
-button.up { BathroomStatus.south.free! }
 
 class BathroomStatus
   attr_reader :location, :status, :updated_at
@@ -34,13 +40,11 @@ class BathroomStatus
   end
 
   def busy!
-    puts "BUSY!!"
     self.status = :broken
     self.updated_at = Time.now
   end
 
   def free!
-    puts "FREE!!"
     self.status = :stable
     self.updated_at = Time.now
   end
