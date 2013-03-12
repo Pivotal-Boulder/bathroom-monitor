@@ -1,62 +1,52 @@
 require 'rspec'
-require './bathroom_status'
+require './room_status'
 require 'fire/forget'
 
-describe BathroomStatus do
-  let (:north_status) { BathroomStatus.north }
-  let (:south_status) { BathroomStatus.south }
+describe RoomStatus do
+  let (:room) { RoomStatus.new("North Room", "some_url") }
 
+  let(:failure_json) {
+    {
+      name: "North Room",
+      url: "",
+      build: {
+        number: 20,
+        phase: "FINISHED",
+        status: "FAILURE",
+        url: "/#{20}/"
+      }
+    }
+  }
+
+  let(:success_json) {
+    {
+      name: "North Room",
+      url: "",
+      build: {
+        number: 20,
+        phase: "FINISHED",
+        status: "SUCCESS",
+        url: "/#{20}/"
+      }
+    }
+  }
   before do
     FAF.stub(:post)
   end
 
-  describe '.north' do
-    it 'should return the same instance' do
-      BathroomStatus.north.should be BathroomStatus.north
-    end
-  end
-
-  describe '.south' do
-    it 'should return the same instance' do
-      BathroomStatus.south.should be BathroomStatus.south
-    end
-  end
-
-  it 'should record its location' do
-    north_status.location.should == :north
-    south_status.location.should == :south
-  end
-
-  describe '#title' do
-    it 'should include the location' do
-      north_status.title.should == 'North Bathroom'
-      south_status.title.should == 'South Bathroom'
-    end
-  end
-
-  describe '#status' do
-    it 'should default to "stable"' do
-      north_status.status.should == "SUCCESS"
-    end
-  end
-
   describe '#busy!' do
-    it 'should set the status to :broken' do
-      now = Time.now
-      Time.stub(:now).and_return(now)
-
-      north_status.busy!
-      north_status.status.should == "FAILURE"
+    it 'should set the status to send broken json' do
+      Time.should_receive(:now).and_return(20)
+      FAF.should_receive(:post).with("some_url", failure_json, anything)
+      room.busy!
     end
   end
 
   describe '#free!' do
-    it 'should set the status to :stable' do
-      now = Time.now
-      Time.stub(:now).and_return(now)
-
-      north_status.free!
-      north_status.status.should == "SUCCESS"
+    it 'should send the success json' do
+      Time.should_receive(:now).and_return(20)
+      FAF.should_receive(:post).with("some_url", success_json, anything)
+      room.free!
     end
   end
 end

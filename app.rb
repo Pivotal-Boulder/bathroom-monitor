@@ -1,12 +1,15 @@
 require 'active_support'
 require 'dino'
-require 'fire/forget'
-require './bathroom_status'
+require 'yaml'
+require './room_status'
 
 board = Dino::Board.new(Dino::TxRx.new)
-button = Dino::Components::Button.new(pin: 12, board: board)
 
-button.down { BathroomStatus.south.busy! }
-button.up { BathroomStatus.south.free! }
+YAML.load(File.open(File.expand_path("../rooms.yml", __FILE__))).each do |room|
+  room_status = RoomStatus.new(room["name"], room["post_url"])
 
+  button = Dino::Components::Button.new(pin: room["pin"], board: board)
+  button.down { room_status.busy! }
+  button.up { room_status.free! }
+end
 sleep
