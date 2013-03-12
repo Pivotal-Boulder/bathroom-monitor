@@ -9,7 +9,6 @@ class RoomStatus
   def busy!
     self.status = "FAILURE"
     self.build_id = Time.now.to_i
-puts build_json
     FAF.post(post_url, build_json, {"X-Header" => true}) { |socket| socket.gets }
   end
 
