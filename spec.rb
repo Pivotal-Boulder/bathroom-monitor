@@ -1,9 +1,14 @@
 require 'rspec'
-require './app'
+require './bathroom_status'
+require 'fire/forget'
 
 describe BathroomStatus do
   let (:north_status) { BathroomStatus.north }
   let (:south_status) { BathroomStatus.south }
+
+  before do
+    FAF.stub(:post)
+  end
 
   describe '.north' do
     it 'should return the same instance' do
@@ -31,7 +36,7 @@ describe BathroomStatus do
 
   describe '#status' do
     it 'should default to "stable"' do
-      north_status.status.should == :stable
+      north_status.status.should == "SUCCESS"
     end
   end
 
@@ -41,8 +46,7 @@ describe BathroomStatus do
       Time.stub(:now).and_return(now)
 
       north_status.busy!
-      north_status.status.should == :broken
-      north_status.updated_at.should == now
+      north_status.status.should == "FAILURE"
     end
   end
 
@@ -52,8 +56,7 @@ describe BathroomStatus do
       Time.stub(:now).and_return(now)
 
       north_status.free!
-      north_status.status.should == :stable
-      north_status.updated_at.should == now
+      north_status.status.should == "SUCCESS"
     end
   end
 end
