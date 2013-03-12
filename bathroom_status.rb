@@ -1,3 +1,5 @@
+require 'fire/forget'
+
 class BathroomStatus
   WEBHOOKSURL = "http://projectmonitor.sf.pivotallabs.com/projects/c3de2dcf-f93b-4ade-9870-344cb989469d/status"
 
